@@ -1,0 +1,28 @@
+{
+  "name": "itis-6177-assignment08",
+  "version": "1.0.0",
+  "description": "Swagger Assignment ",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RamavathyNidamanuri/ITIS-6177-Assignment08.git"
+  },
+  "author": "Ramavathy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/RamavathyNidamanuri/ITIS-6177-Assignment08/issues"
+  },
+  "homepage": "https://github.com/RamavathyNidamanuri/ITIS-6177-Assignment08#readme",
+  "dependencies": {
+    "express": "^4.17.3",
+    "node": "^17.4.0",
+    "swagger-jsdoc": "^6.1.0",
+    "swagger-ui-express": "^4.3.0"
+  },
+  "devDependencies": {},
+  "keywords": []
+}
