@@ -234,7 +234,7 @@ app.get('/api/v1/company/19', async(req,res) =>{
                     res.send(result)
                     return
             })
-            .catch(err => console.error('Query error', err.stack));
+            .catch();
  });
 
 /**
@@ -292,7 +292,7 @@ app.get('/api/v1/company/19', async(req,res) =>{
 *          200:
 *            description: object company details with specific id were deleted
 */
-app.delete('/company/:company_id', function(req,res) {
+app.delete('/company/:comp_id', function(req,res) {
 
     pool.query(`DELETE FROM company WHERE COMPANY_ID = '${req.params.company_id}'`)
     .then(result=> {
