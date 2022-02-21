@@ -132,7 +132,58 @@ app.get('/api/v1/company/19', async(req,res) =>{
         }
 });
 
+/**
+ * @swagger
+ * /compnay/{company_id}:
+ *    get:
+ *      description: Return  all company details of company_id=18
+ *      produces:
+ *          - application/json
+ *      parameters:
+ *          - name: comapny_id
+ *            in: path
+ *            type: integer
+ *            format: int64
+ *            required: true
+ *            example: 18
+ *      responses:
+ *          200:
+ *              description: company object containing company details like id, name and city
+ */
 
+
+ app.get('/company/:company_id', function(req,res) {
+    pool.query(`SELECT * FROM company WHERE COMPANY_ID = '${req.params.company_id}'`)
+    .then(result => {
+            res.statusCode = 200;
+            res.setHeader('Content-Type','Application/json');
+            res.json(result);
+        })
+    .catch(err => console.error('Query error', err.stack));
+});
+
+
+/**
+ * @swagger
+ * /foods:
+ *    post:
+ *      description: Add food item
+ *      produces:
+ *          - application/json
+ *      parameters:
+ *          - name: food
+ *            in: body
+ *            required: true
+ *            schema:
+ *                $ref: "#/definitions/foods"
+ *      responses:
+ *          200:
+ *              description: foods object contain item id ,name, item unit and company id
+ *          400:
+ *              description: passed wrong values
+  *          500:
+ *              description: Server side error
+ */
 
 
 app.listen(port,() => {
