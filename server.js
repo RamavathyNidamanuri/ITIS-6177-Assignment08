@@ -134,7 +134,7 @@ app.get('/api/v1/company/19', async(req,res) =>{
 
 /**
  * @swagger
- * /compnay/{company_id}:
+ * /company/{company_id}:
  *    get:
  *      description: Return  all company details of company_id=18
  *      produces:
