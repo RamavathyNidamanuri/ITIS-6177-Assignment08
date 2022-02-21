@@ -159,17 +159,17 @@ app.get('/api/v1/company/19', async(req,res) =>{
             res.setHeader('Content-Type','Application/json');
             res.json(result);
         })
-    .catch(err => console.error('Query error', err.stack));
+        .catch(err);
 });
 /**
  * @swagger
- * /company:
+ * /insertcompany:
  *    post:
  *      description: Add new company
  *      produces:
  *          - application/json
  *      parameters:
- *          - name: Company
+ *          - name: insertCompany
  *            in: body
  *            required: true
  *            schema:
@@ -179,7 +179,7 @@ app.get('/api/v1/company/19', async(req,res) =>{
  *              description: Company object containing all companies
  */
 
- app.post('/company', function(req,res) {
+ app.post('/insertcompany', function(req,res) {
 
     const err = validationResult(req)
     if (!err.isEmpty()) {
@@ -191,26 +191,25 @@ app.get('/api/v1/company/19', async(req,res) =>{
     const {COMPANY_ID,COMPANY_NAME,COMPANY_CITY}=req.body
 
     pool.query(`INSERT INTO company VALUES ('${COMPANY_ID}', '${COMPANY_NAME}', '${COMPANY_CITY}')`)
-    .then(data => {
+    .then(result => {
             res.statusCode = 200;
             res.set('Content-Type','Application/json');
-            res.send(data)
+            res.send(result)
             return
-            //res.status(200).set('Content-Type','Application/json').send(data);
             })
-    .catch(err => console.error('Query error', err.stack));
+    .catch(err);
 });
 
 
 /**
  * @swagger
- * /foods:
+ * /updatefoods:
  *    put:
  *      description: Update foods
  *      produces:
  *          - application/json
  *      parameters:
- *          - name: Foods
+ *          - name: updateFoods
  *            in: body
  *            required: true
  *      responses:
@@ -218,7 +217,7 @@ app.get('/api/v1/company/19', async(req,res) =>{
  *              description: Foods object containing all foods
  */
 
- app.put('/foods', function(req,res) {
+ app.put('/updatefoods', function(req,res) {
 
     const err = validationResult(req)
     if (!err.isEmpty()) {
@@ -229,10 +228,10 @@ app.get('/api/v1/company/19', async(req,res) =>{
 
     const {ITEM_ID,ITEM_NAME,ITEM_UNIT,COMPANY_ID}=req.body
     pool.query(`UPDATE foods SET ITEM_NAME = '${ITEM_NAME}', ITEM_UNIT = '${ITEM_UNIT}', COMPANY_ID = '${COMPANY_ID}' WHERE ITEM_ID = '${ITEM_ID}'`)
-            .then(ans => {
+            .then(result => {
                     res.statusCode = 200;
                     res.set('Content-Type','Application/json');
-                    res.send(ans)
+                    res.send(result)
                     return
             })
             .catch(err => console.error('Query error', err.stack));
@@ -240,63 +239,64 @@ app.get('/api/v1/company/19', async(req,res) =>{
 
 /**
  * @swagger
- * /foods:
+ * /newfooditem:
  *    patch:
  *      description: Update the food items
  *      produces:
  *          - application/json
  *      parameters:
- *          - name: Foods
+ *          - name: newfooditem
  *            in: body
  *            required: true
  *      responses:
  *          200:
- *              description: Foods object containing all foods
+ *              description: Foods object containing all foods are updated
  */
 
- app.patch('/foods',function(req,res) {
+ app.patch('/newfooditem',function(req,res) {
     pool.query(`SELECT * FROM foods WHERE ITEM_ID = '${ITEM_ID}'`)
-        .then(data => {
-                if (data.length == 0) {
+        .then(result => {
+                if (result.length == 0) {
                         res.statusCode = 400;
                         res.set('Content-Type','Application/json');
                         res.send({err:'Invalid ITEM_ID'})
                         return
                 }
                 pool.query(`UPDATE foods SET ${q} WHERE ITEM_ID = '${ITEM_ID}'`)
-                .then(ans => {
+                .then(result => {
                         res.statusCode = 200;
                         res.set('Content-Type','Application/json');
-                        res.send(ans)
+                        res.send(result)
                         return
                 })
-                .catch(err => console.error('Query error', err.stack));
+                .catch(err);
         })
-        .catch(err => console.error('Query error', err.stack));
+        .catch(err);
 });
+
 /**
 * @swagger
-* /company/{company_id}:
+* /company/{comp_id}:
 *    delete:
 *      description: Delete the specified company
 *      produces:
 *          - application/json
 *      parameters:
-*          - name: company_id
+*          - name: comp_id
 *            in: path
 *            required: true
 *            type: integer
 *            format: int64
-*            example: 10
+*            example: 18
 *      responses:
 *          200:
-*            description: Foods object deleted
+*            description: object company details with specific id were deleted
 */
 app.delete('/company/:company_id', function(req,res) {
 
     pool.query(`DELETE FROM company WHERE COMPANY_ID = '${req.params.company_id}'`)
-    .then(data => {
-            if (data.affectedRows == 0) {
+    .then(result=> {
+            if (result.affectedRows == 0) {
                     res.statusCode = 400;
                     res.set('Content-Type','Application/json');
                     res.send({err:'Invalid COMPANY_ID'})
@@ -305,15 +305,14 @@ app.delete('/company/:company_id', function(req,res) {
             else {
                     res.statusCode = 200;
                     res.set('Content-Type','Application/json');
-                    res.send(data)
+                    res.send(result)
                     return
             }
     })
-    .catch(err => console.error('Query error', err.stack));
+    .catch(err);
 });
 
 app.listen(port, () => {
-console.log('API running on port',port);
+console.log('API listening on port',port);
 });
-
  
