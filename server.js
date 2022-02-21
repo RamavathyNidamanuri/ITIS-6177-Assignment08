@@ -161,35 +161,159 @@ app.get('/api/v1/company/19', async(req,res) =>{
         })
     .catch(err => console.error('Query error', err.stack));
 });
+/**
+ * @swagger
+ * /company:
+ *    post:
+ *      description: Add new company
+ *      produces:
+ *          - application/json
+ *      parameters:
+ *          - name: Company
+ *            in: body
+ *            required: true
+ *            schema:
+ *                $ref: "#/definitions/Company"
+ *      responses:
+ *          200:
+ *              description: Company object containing all companies
+ */
+
+ app.post('/company', function(req,res) {
+
+    const err = validationResult(req)
+    if (!err.isEmpty()) {
+            res.statusCode = 400
+            res.json({err:err.array()})
+            return;
+    }
+
+    const {COMPANY_ID,COMPANY_NAME,COMPANY_CITY}=req.body
+
+    pool.query(`INSERT INTO company VALUES ('${COMPANY_ID}', '${COMPANY_NAME}', '${COMPANY_CITY}')`)
+    .then(data => {
+            res.statusCode = 200;
+            res.set('Content-Type','Application/json');
+            res.send(data)
+            return
+            //res.status(200).set('Content-Type','Application/json').send(data);
+            })
+    .catch(err => console.error('Query error', err.stack));
+});
 
 
 /**
  * @swagger
  * /foods:
- *    post:
- *      description: Add food item
+ *    put:
+ *      description: Update foods
  *      produces:
  *          - application/json
  *      parameters:
- *          - name: food
+ *          - name: Foods
  *            in: body
  *            required: true
- *            schema:
- *                $ref: "#/definitions/foods"
  *      responses:
  *          200:
- *              description: foods object contain item id ,name, item unit and company id
- *          400:
- *              description: passed wrong values
-  *          500:
- *              description: Server side error
+ *              description: Foods object containing all foods
  */
 
+ app.put('/foods', function(req,res) {
 
-app.listen(port,() => {
-console.log('Example app Listening at http://localhost:', port)
+    const err = validationResult(req)
+    if (!err.isEmpty()) {
+            res.statusCode = 400
+            res.json({err:err.array()})
+            return;
+    }
 
+    const {ITEM_ID,ITEM_NAME,ITEM_UNIT,COMPANY_ID}=req.body
+    pool.query(`UPDATE foods SET ITEM_NAME = '${ITEM_NAME}', ITEM_UNIT = '${ITEM_UNIT}', COMPANY_ID = '${COMPANY_ID}' WHERE ITEM_ID = '${ITEM_ID}'`)
+            .then(ans => {
+                    res.statusCode = 200;
+                    res.set('Content-Type','Application/json');
+                    res.send(ans)
+                    return
+            })
+            .catch(err => console.error('Query error', err.stack));
+ });
+
+/**
+ * @swagger
+ * /foods:
+ *    patch:
+ *      description: Update the food items
+ *      produces:
+ *          - application/json
+ *      parameters:
+ *          - name: Foods
+ *            in: body
+ *            required: true
+ *      responses:
+ *          200:
+ *              description: Foods object containing all foods
+ */
+
+ app.patch('/foods',function(req,res) {
+    pool.query(`SELECT * FROM foods WHERE ITEM_ID = '${ITEM_ID}'`)
+        .then(data => {
+                if (data.length == 0) {
+                        res.statusCode = 400;
+                        res.set('Content-Type','Application/json');
+                        res.send({err:'Invalid ITEM_ID'})
+                        return
+                }
+                pool.query(`UPDATE foods SET ${q} WHERE ITEM_ID = '${ITEM_ID}'`)
+                .then(ans => {
+                        res.statusCode = 200;
+                        res.set('Content-Type','Application/json');
+                        res.send(ans)
+                        return
+                })
+                .catch(err => console.error('Query error', err.stack));
+        })
+        .catch(err => console.error('Query error', err.stack));
+});
+/**
+* @swagger
+* /company/{company_id}:
+*    delete:
+*      description: Delete the specified company
+*      produces:
+*          - application/json
+*      parameters:
+*          - name: company_id
+*            in: path
+*            required: true
+*            type: integer
+*            format: int64
+*            example: 10
+*      responses:
+*          200:
+*            description: Foods object deleted
+*/
+app.delete('/company/:company_id', function(req,res) {
+
+    pool.query(`DELETE FROM company WHERE COMPANY_ID = '${req.params.company_id}'`)
+    .then(data => {
+            if (data.affectedRows == 0) {
+                    res.statusCode = 400;
+                    res.set('Content-Type','Application/json');
+                    res.send({err:'Invalid COMPANY_ID'})
+                    return
+            }
+            else {
+                    res.statusCode = 200;
+                    res.set('Content-Type','Application/json');
+                    res.send(data)
+                    return
+            }
+    })
+    .catch(err => console.error('Query error', err.stack));
 });
 
+app.listen(port, () => {
+console.log('API running on port',port);
+});
 
  
