@@ -254,25 +254,24 @@ app.get('/api/v1/company/19', async(req,res) =>{
  */
 
  app.patch('/newfooditem',function(req,res) {
-    pool.query(`SELECT * FROM foods WHERE ITEM_ID = '${ITEM_ID}'`)
-        .then(result => {
-                if (result.length == 0) {
-                        res.statusCode = 400;
-                        res.set('Content-Type','Application/json');
-                        res.send({err:'Invalid ITEM_ID'})
-                        return
-                }
-                pool.query(`UPDATE foods SET ${q} WHERE ITEM_ID = '${ITEM_ID}'`)
-                .then(result => {
-                        res.statusCode = 200;
-                        res.set('Content-Type','Application/json');
-                        res.send(result)
-                        return
-                })
-                .catch(err);
+        const err = validationResult(req)
+        if (!err.isEmpty()) {
+                res.statusCode = 400
+                res.json({err:err.array()})
+                return;
+        }
+const {ITEM_ID, ITEM_NAME}=req.body
+
+pool.query(`update foods set ITEM_NAME='${ITEM_NAME}' where ITEM_ID = '${ITEM_ID}'`)
+.then(result => {
+        res.statusCode = 200;
+        res.set('Content-Type','Application/json');
+        res.send(result)
+        return
         })
-        .catch(err);
-});
+.catch(err => console.error('Query error', err.stack));
+    });
+
 
 /**
 * @swagger
@@ -294,22 +293,22 @@ app.get('/api/v1/company/19', async(req,res) =>{
 */
 app.delete('/company/:comp_id', function(req,res) {
 
-    pool.query(`DELETE FROM company WHERE COMPANY_ID = '${req.params.company_id}'`)
-    .then(result=> {
-            if (result.affectedRows == 0) {
-                    res.statusCode = 400;
-                    res.set('Content-Type','Application/json');
-                    res.send({err:'Invalid COMPANY_ID'})
-                    return
-            }
-            else {
-                    res.statusCode = 200;
-                    res.set('Content-Type','Application/json');
-                    res.send(result)
-                    return
-            }
-    })
-    .catch(err);
+        pool.query(`DELETE FROM company WHERE COMPANY_ID = '${req.params.comp_id}'`)
+        .then(result=> {
+                if (result.affectedRows == 0) {
+                        res.statusCode = 400;
+                        res.set('Content-Type','Application/json');
+                        res.send({err:'Invalid COMPANY_ID'})
+                        return
+                }
+                else {
+                        res.statusCode = 200;
+                        res.set('Content-Type','Application/json');
+                        res.send(result)
+                        return
+                }
+        })
+        .catch(err => console.error('Query error', err.stack));
 });
 
 app.listen(port, () => {
