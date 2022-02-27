@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const port = 3000;
+const axios = require('axios');
 
 const swaggerJsdoc= require('swagger-jsdoc');
 const swaggerUi = require('swagger-ui-express');
@@ -177,6 +178,10 @@ app.get('/api/v1/company/19', async(req,res) =>{
  *      responses:
  *          200:
  *              description: Company object containing all companies
+ *          400:
+ *              description: Incorrect parameters
+ *          500:
+ *              description: Server Error
  */
 
  app.post('/insertcompany', function(req,res) {
@@ -215,6 +220,10 @@ app.get('/api/v1/company/19', async(req,res) =>{
  *      responses:
  *          200:
  *              description: Foods object containing all foods
+ *          400:
+ *              description: Incorrect parameters
+ *          500:
+ *              description: Server Error
  */
 
  app.put('/updatefoods', function(req,res) {
@@ -251,6 +260,10 @@ app.get('/api/v1/company/19', async(req,res) =>{
  *      responses:
  *          200:
  *              description: Foods object containing all foods are updated
+ *          400:
+ *              description: Incorrect parameters
+ *          500:
+ *              description: Server Error
  */
 
  app.patch('/newfooditem',function(req,res) {
@@ -290,6 +303,10 @@ pool.query(`update foods set ITEM_NAME='${ITEM_NAME}' where ITEM_ID = '${ITEM_ID
 *      responses:
 *          200:
 *            description: object company details with specific id were deleted
+*          400:
+*              description: Incorrect parameters
+*          500:
+*              description: Server Error
 */
 app.delete('/company/:comp_id', function(req,res) {
 
@@ -309,6 +326,37 @@ app.delete('/company/:comp_id', function(req,res) {
                 }
         })
         .catch(err => console.error('Query error', err.stack));
+});
+
+
+/**
+ * @swagger
+ * /say:
+ *    get:
+ *      description: Calls Aws Lambda function 
+ *      produces:
+ *          - application/json
+ *      parameters:
+ *          - keyword: keyword
+ *            value: Hello
+ *      Example: Ramavathy says Hello
+ *      responses:
+ *          200:
+ *              description: it return name say value
+ *          400:
+ *              description: Incorrect parameters
+ *          500:
+ *              description: Server Error
+ */
+
+app.get('/say', async(req,res) => {
+        axios.get('https://srihmv4c09.execute-api.us-east-1.amazonaws.com/prod/hello?keyword='+ req.query.keyword)
+        .then(result => {
+         res.statusCode = 200;
+        res.setHeader('Content-Type','Application/json');
+        res.send(result.data);
+        })
+       .catch(err => console.error('Query error', err.stack));
 });
 
 app.listen(port, () => {
