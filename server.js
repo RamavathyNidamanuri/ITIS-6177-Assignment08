@@ -287,53 +287,10 @@ pool.query(`update foods set ITEM_NAME='${ITEM_NAME}' where ITEM_ID = '${ITEM_ID
 
 
 /**
-* @swagger
-* /company/{comp_id}:
-*    delete:
-*      description: Delete the specified company
-*      produces:
-*          - application/json
-*      parameters:
-*          - name: comp_id
-*            in: path
-*            required: true
-*            type: integer
-*            format: int64
-*            example: 18
-*      responses:
-*          200:
-*            description: object company details with specific id were deleted
-*          400:
-*              description: Incorrect parameters
-*          500:
-*              description: Server Error
-*/
-app.delete('/company/:comp_id', function(req,res) {
-
-        pool.query(`DELETE FROM company WHERE COMPANY_ID = '${req.params.comp_id}'`)
-        .then(result=> {
-                if (result.affectedRows == 0) {
-                        res.statusCode = 400;
-                        res.set('Content-Type','Application/json');
-                        res.send({err:'Invalid COMPANY_ID'})
-                        return
-                }
-                else {
-                        res.statusCode = 200;
-                        res.set('Content-Type','Application/json');
-                        res.send(result)
-                        return
-                }
-        })
-        .catch(err => console.error('Query error', err.stack));
-});
-
-
-/**
  * @swagger
  * /say:
  *    get:
- *      description: Calls Aws Lambda function 
+ *      description: Calls Aws Lambda function
  *      produces:
  *          - application/json
  *      parameters:
@@ -349,15 +306,15 @@ app.delete('/company/:comp_id', function(req,res) {
  *              description: Server Error
  */
 
-app.get('/say', async(req,res) => {
-        axios.get('https://srihmv4c09.execute-api.us-east-1.amazonaws.com/prod/hello?keyword='+ req.query.keyword)
-        .then(result => {
-         res.statusCode = 200;
-        res.setHeader('Content-Type','Application/json');
-        res.send(result.data);
+ app.get('/say', async(req,res) => {
+        axios.get('https://wwp7n2fmi4.execute-api.us-east-1.amazonaws.com/test?keyword='+req.query.keyword)
+        .then(resp => {
+        res.send(resp.data);
         })
-       .catch(err => console.error('Query error', err.stack));
-});
+        .catch(err => console.error('Query error', err.stack));
+    });
+
+
 
 app.listen(port, () => {
 console.log('API listening on port',port);
