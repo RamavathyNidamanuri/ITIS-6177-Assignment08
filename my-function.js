@@ -9,7 +9,7 @@ exports.handler = async (event) => {
         response_data = "Ramavathy says " + keyword;
         status= 200;
     } else {
-        response_data = "Please set input parameter keyword";
+        response_data = " set input parameter keyword";
         status= 400;
         }
     const response = {
